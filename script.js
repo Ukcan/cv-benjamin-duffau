@@ -309,6 +309,15 @@ const detailKicker = document.getElementById("detail-kicker");
 const detailTitle = document.getElementById("detail-title");
 const detailBody = document.getElementById("detail-body");
 const detailCloseBtn = document.getElementById("detail-close");
+const detailSlots = document.getElementById("detail-slots");
+const detailSlotFields = {
+  context: document.getElementById("detail-context"),
+  role: document.getElementById("detail-role"),
+  objectives: document.getElementById("detail-objectives"),
+  deliverables: document.getElementById("detail-deliverables"),
+  tools: document.getElementById("detail-tools"),
+  impact: document.getElementById("detail-impact")
+};
 const detailCloseTriggers = document.querySelectorAll("[data-close-detail]");
 const interactiveItems = document.querySelectorAll(".interactive-item[data-detail-title]");
 
@@ -328,11 +337,40 @@ function isControlClick(target, item) {
 function openDetail(item) {
   if (!detailPage || !detailTitle || !detailBody || !detailCard) return;
 
-  const opensAsSheet = Boolean(item.closest("#formations"));
+  const opensAsSheet = Boolean(item.closest("#formations") || item.closest("#projets"));
 
   detailKicker.textContent = item.dataset.detailKicker || "Détail";
   detailTitle.textContent = item.dataset.detailTitle || "Élément";
   detailBody.textContent = item.dataset.detailBody || "Aucun détail disponible.";
+
+  const detailEntries = [
+    ["context", item.dataset.detailContext],
+    ["role", item.dataset.detailRole],
+    ["objectives", item.dataset.detailObjectives],
+    ["deliverables", item.dataset.detailDeliverables],
+    ["tools", item.dataset.detailTools],
+    ["impact", item.dataset.detailImpact]
+  ];
+
+  let hasDetailSlot = false;
+  detailEntries.forEach(([key, value]) => {
+    const field = detailSlotFields[key];
+    const wrapper = document.getElementById(`detail-slot-${key}-wrap`);
+    if (!field || !wrapper) return;
+
+    if (value) {
+      field.textContent = value;
+      wrapper.hidden = false;
+      hasDetailSlot = true;
+    } else {
+      field.textContent = "";
+      wrapper.hidden = true;
+    }
+  });
+
+  if (detailSlots) {
+    detailSlots.hidden = !hasDetailSlot;
+  }
 
   detailPage.classList.toggle("mode-sheet", opensAsSheet);
   if (detailCloseBtn) {
@@ -482,6 +520,8 @@ window.addEventListener("keydown", (event) => {
 updateActiveMenu();
 updateProgress();
 setFilter("all", null);
+
+
 
 
 
